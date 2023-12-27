@@ -1,6 +1,8 @@
 package com.example.chat.handler;
 
 import com.example.chat.dto.ChatMessageDto;
+import com.example.chat.dto.ChatRoom;
+import com.example.chat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     // chatRoomId: {session1, session2}
     private final Map<String,Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
+
 
 
     //웹소캣 연결
@@ -58,9 +61,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         // ChatDTO 의 열거형인 MessageType 안에 있는 ENTER 과 동일한 값이라면
         if (chatMessageDto.getMessageType().equals(ChatMessageDto.MessageType.ENTER)) {
             // sessions 에 넘어온 session 을 담고,
+            chatMessageDto.setMessage(chatMessageDto.getSenderId() + "님이 입장했습니다.");
             chatRoomSession.add(session);
         }
-        if (chatRoomSession.size()>=3) {
+        if (chatRoomSession.size() >= 3) {
             removeClosedSession(chatRoomSession);
         }
         sendMessageToChatRoom(chatMessageDto, chatRoomSession);
