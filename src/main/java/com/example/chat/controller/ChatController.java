@@ -3,27 +3,24 @@ package com.example.chat.controller;
 import com.example.chat.dto.ChatMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/chat")
+@Controller
 public class ChatController {
 
 //    private final ChatService chatService;
 
     private final SimpMessageSendingOperations messagingTemplate;
 
-    @MessageMapping("/message")
-    public void message(ChatMessageDto message) {
-        if (ChatMessageDto.MessageType.JOIN.equals(message.getMessageType()))
-            message.setMessage(message.getSenderId() + "님이 입장하셨습니다.");
+    @MessageMapping("chat/message")
+    public void message(@Payload ChatMessageDto message) {
+        if (ChatMessageDto.MessageType.ENTER.equals(message.getType()))
+            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
         messagingTemplate.convertAndSend("/sub/chat/room/"
-                + message.getChatRoomId(), message);
+                + message.getRoomId(), message);
     }
 
     /**
