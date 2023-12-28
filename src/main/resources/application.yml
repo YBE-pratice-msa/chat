@@ -8,5 +8,8 @@ spring:
     cache: false
     template-loader-path: classpath:/templates/
     suffix: .ftl
-  profiles:
-    active: local
+#  profiles:
+#    active: local
+  config:
+    activate:
+      on-profile: local
