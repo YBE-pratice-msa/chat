@@ -24,6 +24,8 @@ public class ChatController {
     }
 
     /**
+     * @MessageMapping("chat/message")은 스프링 프레임워크에서
+     * WebSocket 또는 STOMP 기반의 메시징을 처리하기 위한 주석(annotation)이다.
      * @MessageMapping 을 통해 WebSocket 으로 들어오는 메시지 발행을 처리한다.
      * 클라이언트는 prefix 를 붙여서 /pub/chat/message 로 발행 요청하면 컨트롤러가 처리한다.
      * 메시지가 발행되면, /sub/chat/room/{chatRoomId} 로 메시지 send 하는데,
