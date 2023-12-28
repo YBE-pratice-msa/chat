@@ -30,7 +30,7 @@ public class MongoDBTestService {
     }
 
     public void saveUser(String name, int age) {
-        MongoDBTestModel model = new MongoDBTestModel(name, age);
+        MongoDBTestModel model = MongoDBTestModel.builder().name(name).age(age).build();
         if (mongoDBTestRepository.findByName(name) != null) {
             log.info("[Service] user name : {} is already exist!", name);
         } else {

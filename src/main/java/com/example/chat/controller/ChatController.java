@@ -41,14 +41,5 @@ public class ChatController {
      * 기존의 WebSocketHandler 의 역할을 대체하므로 삭제한다.
      */
 
-//    @PostMapping
-//    public ChatRoom createRoom(@RequestParam String name) {
-//        return chatService.createRoom(name);
-//    }
-//
-//    @GetMapping
-//    public List<ChatRoom> findAllRoom() {
-//        return chatService.findAllRoom();
-//    }
 }
 
