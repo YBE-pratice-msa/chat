@@ -1,5 +1,7 @@
 package com.example.mongo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,4 +18,5 @@ public class MongoDBTestModel {
     @Id
     private String name;
     private int age;
+    private String now;
 }

@@ -2,6 +2,8 @@ package com.example.mongo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,9 @@ public class MongoDBTestService {
     }
 
     public void saveUser(String name, int age) {
-        MongoDBTestModel model = MongoDBTestModel.builder().name(name).age(age).build();
+        MongoDBTestModel model = MongoDBTestModel.builder()
+                .name(name).age(age).now(LocalDateTime.now().toString())
+                .build();
         if (mongoDBTestRepository.findByName(name) != null) {
             log.info("[Service] user name : {} is already exist!", name);
         } else {

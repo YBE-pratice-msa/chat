@@ -1,10 +1,12 @@
 package com.example.chat.controller;
 
-
+import com.example.chat.dto.ChatMessageDto;
 import com.example.chat.dto.ChatRoom;
 import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.service.ChatService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/chat")
+@Slf4j
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatService chatService;
 
     // 채팅 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
+        log.info("chatRoomController : start");
         return "/chat/room";
     }
     // 모든 채팅방 목록 반환
@@ -45,6 +50,7 @@ public class ChatRoomController {
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
+
         return "/chat/roomdetail";
     }
 

@@ -62,7 +62,7 @@
       messages: []
     },
     created() {
-      this.roomId = localStorage.getItem('wschat.roomId');
+      this.roomId = localStorage.getItem('wschat.roomId'); //localStorage : 브라우저에서 사용하는 정보 저장소
       this.sender = localStorage.getItem('wschat.sender');
       this.findRoom();
     },
