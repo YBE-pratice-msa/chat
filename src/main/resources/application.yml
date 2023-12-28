@@ -8,8 +8,12 @@ spring:
     cache: false
     template-loader-path: classpath:/templates/
     suffix: .ftl
-#  profiles:
-#    active: local
-  config:
-    activate:
-      on-profile: local
+  profiles:
+    active: local
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/finalProject?retryWrites=true&w=majority
+
+#  config:
+#    activate:
+#      on-profile: local
