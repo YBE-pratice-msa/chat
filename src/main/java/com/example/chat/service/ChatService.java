@@ -1,36 +1,46 @@
 package com.example.chat.service;
-
 import com.example.chat.dto.ChatMessageDto;
-import com.example.chat.entity.ChatMessage;
-import com.example.chat.repository.ChatMessageRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.type.MessageType;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatService {
 
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChannelTopic channelTopic;
+    private final RedisTemplate redisTemplate;
+    private final ChatRoomRepository chatRoomRepository;
 
-    // 채팅 저장
-    @Transactional
-    public void save(ChatMessageDto chatMessageDto) {
-        ChatMessage chatMessage = chatMessageRepository.save(ChatMessage.of(chatMessageDto));
-        log.info("save success : {}", chatMessage.getMessage());
+    /**
+     * destination정보에서 roomId 추출
+     */
+    public String getRoomId(String destination) {
+        int lastIndex = destination.lastIndexOf('/');
+        if (lastIndex != -1)
+            return destination.substring(lastIndex + 1);
+        else
+            return "";
     }
 
-    // 채팅 불러오기
-    public List<ChatMessageDto> findAll(String roomId) {
-        List<ChatMessageDto> chatMessageList =
-                chatMessageRepository.findAllByRoomId(roomId)
-                        .stream().map(ChatMessageDto::fromEntity)
-                        .collect(Collectors.toList());
-        return chatMessageList;
+    /**
+     * 채팅방에 메시지 발송
+     */
+    public void sendChatMessage(ChatMessageDto chatMessage) {
+        chatMessage.setUserCount(chatRoomRepository.getUserCount(chatMessage.getRoomId()));
+
+        if (MessageType.ENTER.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
+            chatMessage.setSender("[알림]");
+
+        } else if (MessageType.QUIT.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
+            chatMessage.setSender("[알림]");
+        }
+        redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
 }

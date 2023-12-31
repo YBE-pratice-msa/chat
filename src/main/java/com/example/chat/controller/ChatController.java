@@ -1,22 +1,26 @@
 package com.example.chat.controller;
 
 import com.example.chat.dto.ChatMessageDto;
-import com.example.chat.pubsub.RedisPublisher;
 import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.service.ChatMongoService;
 import com.example.chat.service.ChatService;
 import com.example.chat.type.MessageType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class ChatController {
 
-    private final RedisPublisher redisPublisher;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatMongoService chatMongoService;
     private final ChatService chatService;
 
     /**
@@ -24,13 +28,11 @@ public class ChatController {
      */
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto message) {
-        if (MessageType.ENTER.equals(message.getType())) {
-            chatRoomRepository.enterChatRoom(message.getRoomId());
-            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
-        }
-        chatService.save(message);
-        // Websocket에 발행된 메시지를 redis로 발행한다(publish)
-        redisPublisher.publish(chatRoomRepository.getTopic(message.getRoomId()), message);
+        log.info("chatController Sender: {}", message.getSender());
+        chatMongoService.save(message);
+        message.setUserCount(chatRoomRepository.getUserCount(message.getRoomId()));
+        chatService.sendChatMessage(message);
+
     }
 
     /**

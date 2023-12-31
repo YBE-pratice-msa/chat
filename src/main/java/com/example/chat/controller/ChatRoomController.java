@@ -1,9 +1,8 @@
 package com.example.chat.controller;
 
-import com.example.chat.dto.ChatMessageDto;
 import com.example.chat.dto.ChatRoom;
 import com.example.chat.repository.ChatRoomRepository;
-import com.example.chat.service.ChatService;
+import com.example.chat.service.ChatMongoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Controller
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatService chatService;
 
     // 채팅 리스트 화면
     @GetMapping("/room")
@@ -32,11 +29,16 @@ public class ChatRoomController {
         log.info("chatRoomController : start");
         return "/chat/room";
     }
+
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> room() {
-        return chatRoomRepository.findAllRoom();
+        List<ChatRoom> chatRoomList =
+                chatRoomRepository.findAllRoom();
+        chatRoomList.stream().forEach(room ->
+                room.setUserCount(chatRoomRepository.getUserCount(room.getRoomId())));
+        return chatRoomList;
     }
 
     // 채팅방 생성
