@@ -60,7 +60,7 @@ public class StompHandler implements ChannelInterceptor {
 
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
 
-            // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
+            // 연결이 종료된 클라이언트 sesssion Id 로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = chatRoomRepository.getUserEnterRoomId(sessionId);
             String name = chatRoomRepository.getUserInfoBySessionId(sessionId);
